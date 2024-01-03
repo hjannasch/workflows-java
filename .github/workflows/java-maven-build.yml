@@ -3,6 +3,10 @@ name: Java Maven Build
 on:
   workflow_call:
     inputs:
+      use-cache:
+        default: true
+        required: false
+        type: boolean
       java-version:
         default: '21'
         required: false
@@ -30,6 +34,7 @@ jobs:
           distribution: ${{ inputs.java-distribution }}
           cache: maven
       - name: Cache local Maven repository
+        if: inputs.use-cache
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
