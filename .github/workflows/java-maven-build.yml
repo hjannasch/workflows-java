@@ -1,9 +1,14 @@
-name: Java 21 Maven Build
+name: Java Maven Build
 
 on:
   workflow_call:
     inputs:
-      config-path:
+      java-version:
+        default: '21'
+        required: false
+        type: string
+      java-distribution:
+        default: 'temurin'
         required: false
         type: string
 jobs:
@@ -11,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ inputs.java-version }}
         uses: actions/setup-java@v3
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.java-distribution }}
           cache: maven
       - name: compile
         run: mvn clean compile -U --file pom.xml
