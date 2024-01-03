@@ -11,6 +11,10 @@ on:
         default: 'temurin'
         required: false
         type: string
+      surefire-report:
+        default: true
+        required: false
+        type: boolean
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,5 +41,5 @@ jobs:
       - name: Test
         run: mvn verify --batch-mode --fail-at-end --errors --file pom.xml
       - name: Publish Test Report
-        if: success() || failure()
+        if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
