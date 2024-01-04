@@ -71,7 +71,7 @@ jobs:
         env:
           super_secret: ${{ secrets.AZURE_CREDENTIALS }}
         if: ${{ env.super_secret == '' }}
-        run: 'echo "echo the secret is not present; echo please go to \"settings \> secrets \> actions\" to create it"
+        run: echo "the secret is not present"
 
       - name: Azure login
         uses: azure/login@v1
