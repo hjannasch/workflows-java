@@ -7,6 +7,10 @@ on:
         default: true
         required: false
         type: boolean
+      use-jib:
+        default: true
+        required: false
+        type: boolean
       java-version:
         default: '21'
         required: false
@@ -59,3 +63,19 @@ jobs:
       - name: Publish Test Report
         if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Retrieve nexus password from Azure key vault
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            secretValue=$(az keyvault secret show --name "nexus-docker-password" --vault-name "kv-eGovVault-prod-001" --query "value")
+            echo "NEXUS_DOCKER_PASSWORD="$secretValue >> $GITHUB_ENV
+
+#      - name: Build container with JIB
+#        if: inputs.use-jib
+#        run: mvn package jib:build -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
+
