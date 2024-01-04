@@ -67,8 +67,11 @@ jobs:
       - name: Check az installed
         run: echo "az keyvault -h"
 
-      - name: Check secret
-        run: echo ${{secrets.AZURE_CREDENTIALS}}
+      - name: "check is AZURE_CREDENTIALS exists"
+        env:
+          super_secret: ${{ secrets.AZURE_CREDENTIALS }}
+        if: ${{ env.super_secret == '' }}
+        run: 'echo "echo the secret is not present; echo please go to \"settings \> secrets \> actions\" to create it"
 
       - name: Azure login
         uses: azure/login@v1
