@@ -23,6 +23,10 @@ on:
         default: true
         required: false
         type: boolean
+    secrets:
+      AZURE_CREDENTIALS:
+        description: 'Azure login credentials for accessing the key vault.'
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
