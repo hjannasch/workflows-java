@@ -68,28 +68,23 @@ jobs:
         if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
 
-      - name: Check az installed
-        run: echo "az keyvault -h"
-
-      - name: "check is AZURE_CREDENTIALS exists"
-        env:
-          super_secret: ${{ secrets.AZURE_CREDENTIALS }}
-        if: ${{ env.super_secret == '' }}
-        run: echo "the secret is not present"
-
       - name: Azure login
+        if: inputs.use-jib
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Retrieve nexus password from Azure key vault
+        if: inputs.use-jib
         uses: azure/CLI@v1
         with:
           inlineScript: |
+            secretValue=$(az keyvault secret show --name "nexus-docker-user" --vault-name "kv-eGovVault-prod-001" --query "value")
+            echo "NEXUS_DOCKER_USER="$secretValue >> $GITHUB_ENV
             secretValue=$(az keyvault secret show --name "nexus-docker-password" --vault-name "kv-eGovVault-prod-001" --query "value")
             echo "NEXUS_DOCKER_PASSWORD="$secretValue >> $GITHUB_ENV
 
-#      - name: Build container with JIB
-#        if: inputs.use-jib
-#        run: mvn package jib:build -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
+      - name: Build container with JIB
+        if: inputs.use-jib
+        run: mvn package jib:build -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
 
