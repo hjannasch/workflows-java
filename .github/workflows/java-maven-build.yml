@@ -64,6 +64,10 @@ jobs:
         if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
 
+      - name: Check az installed
+        run: echo "az keyvault -h"
+
+      - name: Azure login
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
