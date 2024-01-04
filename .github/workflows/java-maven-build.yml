@@ -54,7 +54,7 @@ jobs:
         run: mvn clean compile -U --file pom.xml
 
       - name: Test
-        run: mvn verify -Dchangelist=${{ TIMESTAMP_VERSION }} --batch-mode --fail-at-end --errors --file pom.xml
+        run: mvn verify -Dchangelist=$TIMESTAMP_VERSION --batch-mode --fail-at-end --errors --file pom.xml
 
       - name: Publish Test Report
         if: inputs.surefire-report && (success() || failure())
