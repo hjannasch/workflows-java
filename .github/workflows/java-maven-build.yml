@@ -68,7 +68,7 @@ jobs:
         run: echo "az keyvault -h"
 
       - name: Azure login
-      - uses: azure/login@v1
+        uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
