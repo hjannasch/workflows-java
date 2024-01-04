@@ -51,10 +51,10 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Compile
-        run: mvn clean compile -U --file pom.xml
+        run: mvn clean compile -U -Dchangelist=${{ env.TIMESTAMP_VERSION }} --file pom.xml
 
       - name: Test
-        run: mvn verify -Dchangelist=${{ env.TIMESTAMP_VERSION }} --batch-mode --fail-at-end --errors --file pom.xml
+        run: mvn verify --batch-mode --fail-at-end --errors -Dchangelist=${{ env.TIMESTAMP_VERSION }} --file pom.xml
 
       - name: Publish Test Report
         if: inputs.surefire-report && (success() || failure())
