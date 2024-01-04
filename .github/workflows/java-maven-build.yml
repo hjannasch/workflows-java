@@ -67,6 +67,9 @@ jobs:
       - name: Check az installed
         run: echo "az keyvault -h"
 
+      - name: Check secret
+        run: echo ${{secrets.AZURE_CREDENTIALS}}
+
       - name: Azure login
         uses: azure/login@v1
         with:
