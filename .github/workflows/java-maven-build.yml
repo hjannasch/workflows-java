@@ -27,12 +27,20 @@ jobs:
       checks: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set SHORT_COMMIT_SHA
+        run: echo "SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+
+      - name: Set TIMESTAMP_VERSION
+        run: echo "TIMESTAMP_VERSION=$(date +%Y%m%d%H%M)" >> "$GITHUB_ENV"
+
       - name: Set up JDK ${{ inputs.java-version }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.java-distribution }}
           cache: maven
+
       - name: Cache local Maven repository
         if: inputs.use-cache
         uses: actions/cache@v3
@@ -41,10 +49,13 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
       - name: Compile
         run: mvn clean compile -U --file pom.xml
+
       - name: Test
-        run: mvn verify --batch-mode --fail-at-end --errors --file pom.xml
+        run: mvn verify -Dchangelist=${{ TIMESTAMP_VERSION }} --batch-mode --fail-at-end --errors --file pom.xml
+
       - name: Publish Test Report
         if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
