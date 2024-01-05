@@ -3,11 +3,15 @@ name: Java Maven Build
 on:
   workflow_call:
     inputs:
-      use-cache:
+      use-mvn-cache:
         default: true
         required: false
         type: boolean
       use-jib:
+        default: true
+        required: false
+        type: boolean
+      use-jib-cache:
         default: true
         required: false
         type: boolean
@@ -50,7 +54,7 @@ jobs:
           cache: maven
 
       - name: Cache local Maven repository
-        if: inputs.use-cache
+        if: inputs.use-mvn-cache
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -68,6 +72,15 @@ jobs:
         if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
 
+      - name: Cache JIB images and base images
+        if: inputs.use-jib && inputs.use-jib-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/google-cloud-tools-java/jib
+          key: ${{ runner.os }}-jib
+          restore-keys: |
+            ${{ runner.os }}-jib
+
       - name: Azure login
         if: inputs.use-jib
         uses: azure/login@v1
@@ -80,7 +93,6 @@ jobs:
         with:
           inlineScript: |
             secretValue=$(az keyvault secret show --name "nexus-docker-user" --vault-name "kv-eGovVault-prod-001" --query "value")
-            echo "::add-mask::$secretValue"
             echo "NEXUS_DOCKER_USER=$secretValue" >> "$GITHUB_ENV"
             secretValue=$(az keyvault secret show --name "nexus-docker-password" --vault-name "kv-eGovVault-prod-001" --query "value")
             echo "::add-mask::$secretValue"
@@ -88,5 +100,5 @@ jobs:
 
       - name: Build container with JIB
         if: inputs.use-jib
-        run: echo $NEXUS_DOCKER_PASSWORD && mvn package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
+        run: echo $NEXUS_DOCKER_USER && mvn package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
 
