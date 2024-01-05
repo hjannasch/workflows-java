@@ -88,5 +88,5 @@ jobs:
 
       - name: Build container with JIB
         if: inputs.use-jib
-        run: mvn package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
+        run: echo $NEXUS_DOCKER_PASSWORD && mvn package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
 
