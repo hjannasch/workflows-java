@@ -1,5 +1,6 @@
 Common workflows for java based applications
 
+Run and test GitHub Actions locally with https://github.com/nektos/act
 
 ### Azure credential
 https://github.com/Azure/login?tab=readme-ov-file#login-with-a-service-principal-secret
