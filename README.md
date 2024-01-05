@@ -7,3 +7,10 @@ https://github.com/Azure/login?tab=readme-ov-file#login-with-a-service-principal
 
 ### Secrets
 https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
+
+### Known issues
+- JIB Cache not working
+
+### TODO Before migration
+- Fix version and changelist in pom.xml -> move dot[.] to version
+- Add git-commit-id-plugin to all pom.xml
