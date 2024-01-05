@@ -10,6 +10,7 @@ https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inp
 
 ### Known issues
 - JIB Cache not working
+- Pass registry secrets from outside
 
 ### TODO Before migration
 - Fix version and changelist in pom.xml -> move dot[.] to version
