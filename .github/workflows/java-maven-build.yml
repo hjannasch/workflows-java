@@ -81,10 +81,10 @@ jobs:
           inlineScript: |
             secretValue=$(az keyvault secret show --name "nexus-docker-user" --vault-name "kv-eGovVault-prod-001" --query "value")
             echo "::add-mask::$secretValue"
-            echo "NEXUS_DOCKER_USER="$secretValue >> $GITHUB_ENV
+            echo "NEXUS_DOCKER_USER=$secretValue" >> "$GITHUB_ENV"
             secretValue=$(az keyvault secret show --name "nexus-docker-password" --vault-name "kv-eGovVault-prod-001" --query "value")
             echo "::add-mask::$secretValue"
-            echo "NEXUS_DOCKER_PASSWORD="$secretValue >> $GITHUB_ENV
+            echo "NEXUS_DOCKER_PASSWORD=$secretValue" >> "$GITHUB_ENV"
 
       - name: Build container with JIB
         if: inputs.use-jib
