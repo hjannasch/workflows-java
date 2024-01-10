@@ -1,0 +1,28 @@
+name: Azure Vault Access Example
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CREDENTIALS:
+        description: 'Azure login credentials for accessing the key vault.'
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure login
+        if: inputs.use-jib
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Retrieve nexus user and password from Azure key vault
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            secretValue=$(az keyvault secret show --name "nexus-docker-user" --vault-name "kv-eGovVault-prod-001" --query "value")
+            echo "::add-mask::$secretValue"
+            echo "NEXUS_DOCKER_USER=${secretValue//\"/}" >> "$GITHUB_ENV"
+            secretValue=$(az keyvault secret show --name "nexus-docker-password" --vault-name "kv-eGovVault-prod-001" --query "value")
+            echo "::add-mask::$secretValue"
+            echo "NEXUS_DOCKER_PASSWORD=${secretValue//\"/}" >> "$GITHUB_ENV"

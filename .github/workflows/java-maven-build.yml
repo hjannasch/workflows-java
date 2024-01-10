@@ -28,8 +28,11 @@ on:
         required: false
         type: boolean
     secrets:
-      AZURE_CREDENTIALS:
-        description: 'Azure login credentials for accessing the key vault.'
+      CONTAINER_REGISTRY_USER:
+        description: 'Container registry user'
+        required: true
+      CONTAINER_REGISTRY_PASSWORD:
+        description: 'Container registry password'
         required: true
 jobs:
   build:
@@ -81,25 +84,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-jib
 
-      - name: Azure login
-        if: inputs.use-jib
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Retrieve nexus user and password from Azure key vault
-        if: inputs.use-jib
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            secretValue=$(az keyvault secret show --name "nexus-docker-user" --vault-name "kv-eGovVault-prod-001" --query "value")
-            echo "::add-mask::$secretValue"
-            echo "NEXUS_DOCKER_USER=${secretValue//\"/}" >> "$GITHUB_ENV"
-            secretValue=$(az keyvault secret show --name "nexus-docker-password" --vault-name "kv-eGovVault-prod-001" --query "value")
-            echo "::add-mask::$secretValue"
-            echo "NEXUS_DOCKER_PASSWORD=${secretValue//\"/}" >> "$GITHUB_ENV"
-
       - name: Build container with JIB
         if: inputs.use-jib
-        run: echo $NEXUS_DOCKER_USER && ./mvnw package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
-
+        run: ./mvnw package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
+        env:
+          CONTAINER_REGISTRY_USER: ${{ secrets.CONTAINER_REGISTRY_USER }}
+          CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}

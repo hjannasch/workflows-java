@@ -14,4 +14,5 @@ https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inp
 
 ### TODO Before migration
 - Fix version and changelist in pom.xml -> move dot[.] to version
+- Configure jib container registry credentials
 - Add git-commit-id-plugin to all pom.xml
