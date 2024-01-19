@@ -76,7 +76,7 @@ jobs:
         uses: scacap/action-surefire-report@v1
 
       - name: Cache JIB images and base images
-        if: inputs.use-jib && inputs.use-jib-cache
+        if: inputs.use-jib && inputs.use-jib-cache && github.ref == 'refs/heads/main'
         uses: actions/cache@v3
         with:
           path: ~/.cache/google-cloud-tools-java/jib
@@ -85,7 +85,7 @@ jobs:
             ${{ runner.os }}-jib
 
       - name: Build container with JIB
-        if: inputs.use-jib
+        if: inputs.use-jib && github.ref == 'refs/heads/main'
         run: ./mvnw package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
         env:
           CONTAINER_REGISTRY_USER: ${{ secrets.CONTAINER_REGISTRY_USER }}
