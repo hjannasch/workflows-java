@@ -3,6 +3,10 @@ name: Java Maven Build
 on:
   workflow_call:
     inputs:
+      working-directory:
+        required: true
+        default: '.'
+        type: string
       use-mvn-cache:
         default: true
         required: false
@@ -36,6 +40,9 @@ on:
         required: true
 jobs:
   build:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
