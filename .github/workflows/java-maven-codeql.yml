@@ -3,6 +3,10 @@ name: Java Maven Code Quality
 on:
   workflow_call:
     inputs:
+      working-directory:
+        required: true
+        default: '.'
+        type: string
       java-version:
         default: '21'
         required: false
@@ -13,6 +17,9 @@ on:
         type: string
 jobs:
   analyze:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
