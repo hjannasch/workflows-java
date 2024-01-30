@@ -102,3 +102,6 @@ jobs:
       - name: Build container with JIB
         if: github.ref == 'refs/heads/main' && inputs.use-jib
         run: ./mvnw package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
+
+      - name: Output home
+        run: ls -la ~
