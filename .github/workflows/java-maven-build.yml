@@ -91,6 +91,8 @@ jobs:
           CONTAINER_IMAGE_NAMES: ${{ steps.parse-pom.outputs.CONTAINER_IMAGE_NAMES }}
         run: |
           # Assign the output to a variable
+          echo $CONTAINER_IMAGE_NAMES
+          
           myArray = $CONTAINER_IMAGE_NAMES
           
           # Use the array
