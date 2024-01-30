@@ -78,11 +78,11 @@ jobs:
       - name: Find and Parse pom.xml
         id: parse-pom
         run: |
-          imageNames=()
+          imageNames=""
           find . -type f -name "pom.xml" -print0 | while IFS= read -r -d '' file; do
             echo "Parsing $file"
             imageName=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="docker.image.name"]/text()' "$file")
-            imageNames+=("$imageName")
+            imageNames="$parsed_values$imageName,"
           done
           echo "CONTAINER_IMAGE_NAMES=$imageNames" >> "$GITHUB_OUTPUT"
 
