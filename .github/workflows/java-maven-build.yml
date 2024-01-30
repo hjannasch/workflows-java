@@ -94,7 +94,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && inputs.use-jib && inputs.use-jib-cache
         uses: actions/cache@v3
         with:
-          path: ~/.jib/cache
+          path: $XDG_CACHE_HOME/google-cloud-tools-java/jib
           key: ${{ runner.os }}-jib
           restore-keys: |
             ${{ runner.os }}-jib
