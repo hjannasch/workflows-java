@@ -82,18 +82,23 @@ jobs:
         if: inputs.surefire-report && (success() || failure())
         uses: scacap/action-surefire-report@v1
 
+      - name: Login to container registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: docker.nexus.itbs.linkyard-cloud.ch
+          username: ${{ secrets.CONTAINER_REGISTRY_USER }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+
       - name: Cache JIB images and base images
-        if: inputs.use-jib && inputs.use-jib-cache && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && inputs.use-jib && inputs.use-jib-cache
         uses: actions/cache@v3
         with:
-          path: ~/.cache/google-cloud-tools-java/jib
+          path: $HOME/.cache/google-cloud-tools-java/jib
           key: ${{ runner.os }}-jib
           restore-keys: |
             ${{ runner.os }}-jib
 
       - name: Build container with JIB
-        if: inputs.use-jib && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && inputs.use-jib
         run: ./mvnw package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
-        env:
-          CONTAINER_REGISTRY_USER: ${{ secrets.CONTAINER_REGISTRY_USER }}
-          CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
