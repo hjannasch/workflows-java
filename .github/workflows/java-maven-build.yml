@@ -82,16 +82,20 @@ jobs:
           find . -type f -name "pom.xml" -print0 | while IFS= read -r -d '' file; do
             echo "Parsing $file"
             imageName=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="docker.image.name"]/text()' "$file")
-            imageNames="$parsed_values$imageName,"
+            imageNames="$imageNames$imageName,"
           done
+          echo "$imageNames"
           echo "CONTAINER_IMAGE_NAMES=$imageNames" >> "$GITHUB_OUTPUT"
+          echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
 
       - name: Use Array Output
         env:
           CONTAINER_IMAGE_NAMES: ${{ steps.parse-pom.outputs.CONTAINER_IMAGE_NAMES }}
+          SELECTED_COLOR: ${{ steps.parse-pom.outputs.SELECTED_COLOR }}
         run: |
           # Assign the output to a variable
           echo $CONTAINER_IMAGE_NAMES
+          echo $SELECTED_COLOR
 
       - name: Compile
         run: ./mvnw clean compile -U -Dchangelist=${{ env.TIMESTAMP_VERSION }} --file pom.xml
