@@ -84,12 +84,14 @@ jobs:
             imageName=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="docker.image.name"]/text()' "$file")
             imageNames+=("$imageName")
           done
-          echo "::set-output name=imageNames::$imageNames"
+          echo "CONTAINER_IMAGE_NAMES=$imageNames" >> "$GITHUB_OUTPUT"
 
       - name: Use Array Output
+        env:
+          CONTAINER_IMAGE_NAMES: ${{ steps.parse-pom.outputs.CONTAINER_IMAGE_NAMES }}
         run: |
           # Assign the output to a variable
-          myArray = ${{ steps.parse-pom.outputs.imageNames }}
+          myArray = ${{ $SELECTED_COLOR }}
           
           # Use the array
           for item in "${myArray[@]}"; do
