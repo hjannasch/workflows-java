@@ -65,7 +65,7 @@ jobs:
 
       - name: Cache local Maven repository
         if: inputs.use-mvn-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -119,7 +119,7 @@ jobs:
 
       - name: Cache JIB images and base images
         if: github.ref == 'refs/heads/main' && inputs.use-jib && inputs.use-jib-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/google-cloud-tools-java
           key: ${{ runner.os }}-jib
