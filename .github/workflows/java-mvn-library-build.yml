@@ -23,13 +23,6 @@ on:
         default: true
         required: false
         type: boolean
-    secrets:
-      CONTAINER_REGISTRY_USER:
-        description: 'Container registry user'
-        required: true
-      CONTAINER_REGISTRY_PASSWORD:
-        description: 'Container registry password'
-        required: true
 jobs:
   build:
     defaults:
