@@ -19,6 +19,10 @@ on:
         default: true
         required: false
         type: boolean
+      code-format-check:
+        default: true
+        required: false
+        type: boolean
       java-version:
         default: '21'
         required: false
@@ -71,6 +75,10 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
+      - name: Code format check
+        if: inputs.code-format-check
+        run: ./mvnw com.spotify.fmt:fmt-maven-plugin:check
 
       - name: Compile
         run: ./mvnw clean compile -U -Dchangelist=${{ env.TIMESTAMP_VERSION }} --file pom.xml
