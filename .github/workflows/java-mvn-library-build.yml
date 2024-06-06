@@ -65,7 +65,7 @@ jobs:
         run: ./mvnw verify --batch-mode --fail-at-end --errors --file pom.xml
 
       - name: Deploy to artefact server
-        if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || github.ref == 'refs/heads/master') && inputs.deploy-jars
+        if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || github.ref == 'refs/heads/main') && inputs.deploy-jars
         run: ./mvnw -Dmaven.test.skip=true -DskipTests deploy
 
       - name: Publish Test Report
