@@ -23,6 +23,10 @@ on:
         default: true
         required: false
         type: boolean
+      deploy-jars:
+        default: true
+        required: false
+        type: boolean
 jobs:
   build:
     defaults:
@@ -59,6 +63,10 @@ jobs:
 
       - name: Test
         run: ./mvnw verify --batch-mode --fail-at-end --errors --file pom.xml
+
+      - name: Deploy to artefact server
+        if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || github.ref == 'refs/heads/master') && inputs.deploy-jars
+        run: ./mvnw -Dmaven.test.skip=true -DskipTests deploy
 
       - name: Publish Test Report
         if: inputs.surefire-report && (success() || failure())
