@@ -1,0 +1,72 @@
+name: Java Maven Build
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: true
+        default: '.'
+        type: string
+      use-mvn-cache:
+        default: true
+        required: false
+        type: boolean
+      java-version:
+        default: '21'
+        required: false
+        type: string
+      java-distribution:
+        default: 'temurin'
+        required: false
+        type: string
+      surefire-report:
+        default: true
+        required: false
+        type: boolean
+    secrets:
+      CONTAINER_REGISTRY_USER:
+        description: 'Container registry user'
+        required: true
+      CONTAINER_REGISTRY_PASSWORD:
+        description: 'Container registry password'
+        required: true
+jobs:
+  build:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ inputs.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.java-distribution }}
+          cache: maven
+
+      - name: Cache local Maven repository
+        if: inputs.use-mvn-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Code format check
+        run: ./mvnw com.spotify.fmt:fmt-maven-plugin:check
+
+      - name: Compile
+        run: ./mvnw clean compile --file pom.xml
+
+      - name: Test
+        run: ./mvnw verify --batch-mode --fail-at-end --errors --file pom.xml
+
+      - name: Publish Test Report
+        if: inputs.surefire-report && (success() || failure())
+        uses: scacap/action-surefire-report@v1
