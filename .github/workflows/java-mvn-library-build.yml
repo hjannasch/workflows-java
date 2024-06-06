@@ -31,6 +31,13 @@ on:
         default: true
         required: false
         type: boolean
+    secrets:
+      ARTEFACT_REPO_USER:
+        description: 'Artefact repository user'
+        required: true
+      ARTEFACT_REPO_PASSWORD:
+        description: 'Artefact repository password'
+        required: true
 jobs:
   build:
     defaults:
@@ -77,6 +84,9 @@ jobs:
 
       - name: Deploy to artefact server
         if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || github.ref == 'refs/heads/main') && inputs.deploy-jars
+        env:
+          ARTEFACT_REPO_USER: ${{ secrets.ARTEFACT_REPO_USER }}
+          ARTEFACT_REPO_PASSWORD: ${{ secrets.ARTEFACT_REPO_PASSWORD }}
         run: ./mvnw -Dmaven.test.skip=true -DskipTests deploy
 
       - name: Publish Test Report
