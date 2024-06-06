@@ -27,6 +27,10 @@ on:
         default: true
         required: false
         type: boolean
+      code-format-check:
+        default: true
+        required: false
+        type: boolean
 jobs:
   build:
     defaults:
@@ -56,6 +60,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Code format check
+        if: inputs.code-format-check
         run: ./mvnw com.spotify.fmt:fmt-maven-plugin:check
 
       - name: Compile
@@ -63,6 +68,12 @@ jobs:
 
       - name: Test
         run: ./mvnw verify --batch-mode --fail-at-end --errors --file pom.xml
+
+      - name: Configure maven for deploy
+        if: inputs.deploy-jars
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          servers: '[{ "id": "linkyard.repo", "username": "${env.ARTEFACT_REPO_USER}", "password": "${env.ARTEFACT_REPO_PASSWORD}" }]'
 
       - name: Deploy to artefact server
         if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || github.ref == 'refs/heads/main') && inputs.deploy-jars
