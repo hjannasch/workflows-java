@@ -42,6 +42,12 @@ on:
       CONTAINER_REGISTRY_PASSWORD:
         description: 'Container registry password'
         required: true
+      ARTEFACT_REPO_USER:
+        description: 'Artefact repository user'
+        required: false
+      ARTEFACT_REPO_PASSWORD:
+        description: 'Artefact repository password'
+        required: false
 jobs:
   build:
     defaults:
@@ -82,9 +88,15 @@ jobs:
 
       - name: Compile
         run: ./mvnw clean compile -U -Dchangelist=${{ env.TIMESTAMP_VERSION }} --file pom.xml
+        env:
+          ARTEFACT_REPO_USER: ${{ secrets.ARTEFACT_REPO_USER }}
+          ARTEFACT_REPO_PASSWORD: ${{ secrets.ARTEFACT_REPO_PASSWORD }}
 
       - name: Test
         run: ./mvnw verify --batch-mode --fail-at-end --errors -Dchangelist=${{ env.TIMESTAMP_VERSION }} --file pom.xml
+        env:
+          ARTEFACT_REPO_USER: ${{ secrets.ARTEFACT_REPO_USER }}
+          ARTEFACT_REPO_PASSWORD: ${{ secrets.ARTEFACT_REPO_PASSWORD }}
 
       - name: Publish Test Report
         if: inputs.surefire-report && (success() || failure())
