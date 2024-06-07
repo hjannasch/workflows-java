@@ -42,7 +42,7 @@ on:
       artefact-repo-name:
         default: 'linkyard.repo'
         required: false
-        type: boolean
+        type: string
     secrets:
       CONTAINER_REGISTRY_USER:
         description: 'Container registry user'
