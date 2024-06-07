@@ -83,7 +83,7 @@ jobs:
           servers: '[{ "id": "linkyard.repo", "username": "${env.ARTEFACT_REPO_USER}", "password": "${env.ARTEFACT_REPO_PASSWORD}" }]'
 
       - name: Deploy to artefact server
-        if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || github.ref == 'refs/heads/main') && inputs.deploy-jars
+        if:  (contains(github.ref, 'deploy') || contains(github.ref, 'release') || contains(github.ref, 'feature') || github.ref == 'refs/heads/main') && inputs.deploy-jars
         env:
           ARTEFACT_REPO_USER: ${{ secrets.ARTEFACT_REPO_USER }}
           ARTEFACT_REPO_PASSWORD: ${{ secrets.ARTEFACT_REPO_PASSWORD }}
