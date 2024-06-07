@@ -82,6 +82,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Configure maven with artefact credentials
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          servers: '[{ "id": "linkyard.repo", "username": "${env.ARTEFACT_REPO_USER}", "password": "${env.ARTEFACT_REPO_PASSWORD}" }]'
+
       - name: Code format check
         if: inputs.code-format-check
         run: ./mvnw com.spotify.fmt:fmt-maven-plugin:check
