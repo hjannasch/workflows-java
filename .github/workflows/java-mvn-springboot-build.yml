@@ -35,6 +35,14 @@ on:
         default: true
         required: false
         type: boolean
+      artefact-repo-enabled:
+        default: false
+        required: false
+        type: boolean
+      artefact-repo-name:
+        default: 'linkyard.repo'
+        required: false
+        type: boolean
     secrets:
       CONTAINER_REGISTRY_USER:
         description: 'Container registry user'
@@ -83,9 +91,10 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Configure maven with artefact credentials
+        if: inputs.artefact-repo-enabled
         uses: whelk-io/maven-settings-xml-action@v22
         with:
-          servers: '[{ "id": "linkyard.repo", "username": "${env.ARTEFACT_REPO_USER}", "password": "${env.ARTEFACT_REPO_PASSWORD}" }]'
+          servers: '[{ "id": "${{inputs.artefact-repo-name}}", "username": "${env.ARTEFACT_REPO_USER}", "password": "${env.ARTEFACT_REPO_PASSWORD}" }]'
 
       - name: Code format check
         if: inputs.code-format-check
