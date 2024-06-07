@@ -15,10 +15,6 @@ on:
         default: true
         required: false
         type: boolean
-      use-jib-cache:
-        default: true
-        required: false
-        type: boolean
       code-format-check:
         default: true
         required: false
@@ -124,18 +120,6 @@ jobs:
           username: ${{ secrets.CONTAINER_REGISTRY_USER }}
           password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
 
-      - name: Cache JIB images and base images
-        if: github.ref == 'refs/heads/main' && inputs.use-jib && inputs.use-jib-cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/google-cloud-tools-java
-          key: ${{ runner.os }}-jib
-          restore-keys: |
-            ${{ runner.os }}-jib
-
       - name: Build container with JIB
         if: github.ref == 'refs/heads/main' && inputs.use-jib
         run: ./mvnw package jib:build -Dmaven.test.skip=true -Dchangelist=${{ env.TIMESTAMP_VERSION }} -Ddocker.image.version=${{ env.SHORT_COMMIT_SHA }}
-
-      - name: Output home (Remove after jib cache is running)
-        run: ls -la ~/.cache/google-cloud-tools-java
